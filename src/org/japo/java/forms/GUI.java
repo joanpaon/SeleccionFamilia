@@ -17,92 +17,62 @@ package org.japo.java.forms;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.net.URL;
-import javax.swing.ImageIcon;
+import java.util.Properties;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
+import org.japo.java.libraries.UtilesSwing;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
 public class GUI extends JFrame {
-    // Tamaño de la ventana
-    public static final int VENTANA_ANC = 600;
-    public static final int VENTANA_ALT = 400;
 
-    // Fuente etiqueta - Parámetros
-    private String fntFamLBL;
-    public static final int FNT_EST_LBL = Font.PLAIN;
-    public static final int FNT_TAM_LBL = 40;
-    
-    // Fuente Controles - Parámetros
-    public static final String FNT_FAM_CTR = "Calibri";
-    public static final int FNT_EST_CTR = Font.BOLD;
-    public static final int FNT_TAM_CTR = 30;
-    
-    // Texto de prueba
-    public static final String TEXTO = "Érase una vez Java";
-    
-    // Ruta Imagen de Fondo - Panel Control
-    private final String RES_PKG = "/img";
-    private final String RES_IMG = "background.jpg";
-    private final String RECURSO = RES_PKG + "/" + RES_IMG;
+    // Propiedades App
+    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
+    public static final String PRP_FAVICON = "favicon";
 
-    // Componentes del GUI
-    private JLabel lblPrueba;
+    // Valores por Defecto
+    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
+    public static final String DEF_FAVICON = "img/favicon.png";
+
+    // Referencias
+    private Properties prp;
+    private JLabel lblRotulo;
     private JComboBox<String> cbbFamilia;
 
-    public GUI() {
-        // Inicialización PREVIA
-        beforeInit();
+    // Constructor
+    public GUI(Properties prp) {
+        // Inicialización Anterior
+        initBefore(prp);
 
         // Creación Interfaz
         initComponents();
 
-        // Inicialización POSTERIOR
-        afterInit();
+        // Inicializacion Posterior
+        initAfter();
     }
 
     // Construcción del IGU
     private void initComponents() {
-        // Fuentes
-        Font fntLBL = new Font(fntFamLBL, FNT_EST_LBL, FNT_TAM_LBL);
-        Font fntCTR = new Font(FNT_FAM_CTR, FNT_EST_CTR, FNT_TAM_CTR);
-        
-        // Bordes
-        Border brdPNL = new EmptyBorder(10, 10, 10, 10);
-        Border brdLBL = new BevelBorder(BevelBorder.LOWERED);
-        
-        // Tamaños
-        Dimension dimFuente = new Dimension(300, 30);
-        
-        // Color - Etiqueta
-        Color c = new Color(184, 244, 244);
-        
-        // Gestor de Eventos de Cambio
-        AEM aem = new AEM(this);
-        
         // Etiqueta de prueba
-        lblPrueba = new JLabel(TEXTO);
-        lblPrueba.setFont(fntLBL);
-        lblPrueba.setOpaque(true);
-        lblPrueba.setBackground(c);
-        lblPrueba.setBorder(brdLBL);
-        lblPrueba.setHorizontalAlignment(JLabel.CENTER);
+        lblRotulo = new JLabel();
+        lblRotulo.setFont(new Font("Georgia", Font.PLAIN, 40));
+        lblRotulo.setText("Érase una vez Java");
+        lblRotulo.setHorizontalAlignment(JLabel.CENTER);
+        lblRotulo.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        lblRotulo.setOpaque(true);
+        lblRotulo.setBackground(Color.WHITE);
 
         // Lista de Familias Tipográficas del Sistema
         String[] listaFamilias = GraphicsEnvironment.
@@ -111,55 +81,58 @@ public class GUI extends JFrame {
 
         // Selector de Familia
         cbbFamilia = new JComboBox(listaFamilias);
-        cbbFamilia.setFont(fntCTR);
-        cbbFamilia.setPreferredSize(dimFuente);
-        cbbFamilia.setSelectedItem(fntLBL);
-        cbbFamilia.addActionListener(aem);
-
-        // Imagen de fondo
-        URL urlImagen = getClass().getResource(RECURSO);
-        Image i = new ImageIcon(urlImagen).getImage();
+        cbbFamilia.setFont(new Font("Cambria", Font.PLAIN, 24));
+        cbbFamilia.setPreferredSize(new Dimension(400, 40));
+        cbbFamilia.setSelectedItem(lblRotulo.getFont().getFamily());
+        cbbFamilia.addActionListener(new AEM(this));
 
         // Panel de control
-        JPanel pnlControl = new BackgroundPanel(i);
-        FlowLayout layout = new FlowLayout(FlowLayout.CENTER, 30, 30);
-        pnlControl.setLayout(layout);
+        JPanel pnlControl = new JPanel(new GridBagLayout());
         pnlControl.add(cbbFamilia);
-        
-        // Panel Principal
-        JPanel pnlPpal = new JPanel();
-        pnlPpal.setLayout(new GridLayout(2, 1));
-        pnlPpal.setBorder(brdPNL);
-        pnlPpal.add(lblPrueba);
+
+        // Panel principal
+        JPanel pnlPpal = new JPanel(new GridLayout(2, 1));
+        pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
+        pnlPpal.add(lblRotulo);
         pnlPpal.add(pnlControl);
-        
+
         // Ventana principal
-        setTitle("Selección Familia");
         setContentPane(pnlPpal);
-        setSize(VENTANA_ANC, VENTANA_ALT);
+        setTitle("Swing Manual #12");
         setResizable(false);
+        setSize(500, 300);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    // Inicialización antes del IGU
-    private void beforeInit() {
-        fntFamLBL = "Georgia";
+    // Inicialización Anterior    
+    private void initBefore(Properties prp) {
+        // Memorizar Referencia
+        this.prp = prp;
+
+        // Establecer LnF
+        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
     }
 
-    // Inicialización después del IGU
-    private void afterInit() {
-
+    // Inicialización Posterior
+    private void initAfter() {
+        // Establecer Favicon
+        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
     }
 
     public void procesarFamilia(ActionEvent e) {
+        // Valores Actuales Fuente
+        String familia = lblRotulo.getFont().getFamily();
+        int estilo = lblRotulo.getFont().getStyle();
+        int talla = lblRotulo.getFont().getSize();
+
         // Familia seleccionada
-        String familia = (String) cbbFamilia.getSelectedItem();
+        familia = (String) cbbFamilia.getSelectedItem();
 
         // Regenera Familia
-        Font f = new Font(familia, FNT_EST_LBL, FNT_TAM_LBL);
+        Font fuente = new Font(familia, estilo, talla);
 
         // Aplica Familia
-        lblPrueba.setFont(f);
+        lblRotulo.setFont(fuente);
     }
 }
