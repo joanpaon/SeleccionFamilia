@@ -18,7 +18,6 @@ package org.japo.java.forms;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -36,25 +35,48 @@ import org.japo.java.libraries.UtilesSwing;
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
-public class GUI extends JFrame {
+public final class GUI extends JFrame {
 
     // Propiedades App
-    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
-    public static final String PRP_FAVICON = "favicon";
+    public static final String PRP_FAVICON_RESOURCE = "favicon_resource";
+    public static final String PRP_FONT_BANNER_RESOURCE = "font_banner_resource";
+    public static final String PRP_FONT_INTERFACE_RESOURCE = "font_interface_resource";
+    public static final String PRP_FORM_HEIGHT = "form_height";
+    public static final String PRP_FORM_TITLE = "form_title";
+    public static final String PRP_FORM_WIDTH = "form_width";
+    public static final String PRP_LOOK_AND_FEEL_PROFILE = "look_and_feel_profile";
 
     // Valores por Defecto
-    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
-    public static final String DEF_FAVICON = "img/favicon.png";
+    public static final String DEF_FAVICON_RESOURCE = "img/favicon.png";
+    public static final String DEF_FONT_BANNER_SYSTEM_NAME = UtilesSwing.FONT_LUCIDA_BRIGHT_NAME;
+    public static final String DEF_FONT_BANNER_FALLBACK_NAME = "Serif";
+    public static final String DEF_FONT_INTERFACE_SYSTEM_NAME = UtilesSwing.FONT_LUCIDA_SANS_NAME;
+    public static final String DEF_FONT_INTERFACE_FALLBACK_NAME = "Dialog";
+    public static final int DEF_FORM_HEIGHT = 300;
+    public static final String DEF_FORM_TITLE = "Swing Manual Title";
+    public static final int DEF_FORM_WIDTH = 500;
+    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
 
     // Referencias
     private Properties prp;
+
+    // Componentes
     private JLabel lblRotulo;
     private JComboBox<String> cbbFamilia;
+    private JPanel pnlControl;
+    private JPanel pnlPpal;
+
+    // Fuentes
+    private Font fntRotulo;
+    private Font fntInterfaz;
 
     // Constructor
     public GUI(Properties prp) {
+        // Conectar Referencia
+        this.prp = prp;
+
         // Inicialización Anterior
-        initBefore(prp);
+        initBefore();
 
         // Creación Interfaz
         initComponents();
@@ -65,59 +87,71 @@ public class GUI extends JFrame {
 
     // Construcción del IGU
     private void initComponents() {
+        // Fuentes
+        fntRotulo = UtilesSwing.generarFuenteRecurso(
+                prp.getProperty(PRP_FONT_BANNER_RESOURCE),
+                DEF_FONT_BANNER_SYSTEM_NAME,
+                DEF_FONT_BANNER_FALLBACK_NAME);
+        fntInterfaz = UtilesSwing.generarFuenteRecurso(
+                prp.getProperty(PRP_FONT_INTERFACE_RESOURCE),
+                DEF_FONT_INTERFACE_SYSTEM_NAME,
+                DEF_FONT_INTERFACE_FALLBACK_NAME);
+
         // Etiqueta de prueba
         lblRotulo = new JLabel();
-        lblRotulo.setFont(new Font("Georgia", Font.PLAIN, 40));
-        lblRotulo.setText("Érase una vez Java");
-        lblRotulo.setHorizontalAlignment(JLabel.CENTER);
-        lblRotulo.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        lblRotulo.setOpaque(true);
         lblRotulo.setBackground(Color.WHITE);
-
-        // Lista de Familias Tipográficas del Sistema
-        String[] listaFamilias = GraphicsEnvironment.
-                getLocalGraphicsEnvironment().
-                getAvailableFontFamilyNames();
+        lblRotulo.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        lblRotulo.setFont(fntRotulo.deriveFont(Font.PLAIN, 40));
+        lblRotulo.setHorizontalAlignment(JLabel.CENTER);
+        lblRotulo.setOpaque(true);
+        lblRotulo.setText("Érase una vez Java");
 
         // Selector de Familia
-        cbbFamilia = new JComboBox(listaFamilias);
-        cbbFamilia.setFont(new Font("Cambria", Font.PLAIN, 24));
+        cbbFamilia = new JComboBox(UtilesSwing.obtenerTipografiasSistema());
+        cbbFamilia.setFont(fntInterfaz.deriveFont(Font.PLAIN, 24));
         cbbFamilia.setPreferredSize(new Dimension(400, 40));
         cbbFamilia.setSelectedItem(lblRotulo.getFont().getFamily());
-        cbbFamilia.addActionListener(new AEM(this));
 
         // Panel de control
-        JPanel pnlControl = new JPanel(new GridBagLayout());
+        pnlControl = new JPanel(new GridBagLayout());
         pnlControl.add(cbbFamilia);
 
         // Panel principal
-        JPanel pnlPpal = new JPanel(new GridLayout(2, 1));
-        pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
+        pnlPpal = new JPanel(new GridLayout(2, 1));
         pnlPpal.add(lblRotulo);
         pnlPpal.add(pnlControl);
+        pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Ventana principal
         setContentPane(pnlPpal);
-        setTitle("Swing Manual #12");
-        setResizable(false);
-        setSize(500, 300);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        try {
+            int height = Integer.parseInt(prp.getProperty(PRP_FORM_HEIGHT));
+            int width = Integer.parseInt(prp.getProperty(PRP_FORM_WIDTH));
+            setSize(width, height);
+        } catch (NumberFormatException e) {
+            setSize(DEF_FORM_WIDTH, DEF_FORM_HEIGHT);
+        }
+        setTitle(prp.getProperty(PRP_FORM_TITLE, DEF_FORM_TITLE));
+        setLocationRelativeTo(null);
     }
 
     // Inicialización Anterior    
-    private void initBefore(Properties prp) {
-        // Memorizar Referencia
-        this.prp = prp;
-
+    private void initBefore() {
         // Establecer LnF
-        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
+        UtilesSwing.establecerLnFProfile(prp.getProperty(
+                PRP_LOOK_AND_FEEL_PROFILE, DEF_LOOK_AND_FEEL_PROFILE));
     }
 
     // Inicialización Posterior
     private void initAfter() {
         // Establecer Favicon
-        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
+        UtilesSwing.establecerFavicon(this, prp.getProperty(
+                PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
+
+        // Registrar Festores de Eventos
+        cbbFamilia.addActionListener(new AEM(this));
     }
 
     public void procesarFamilia(ActionEvent e) {

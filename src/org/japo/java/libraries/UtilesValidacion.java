@@ -1,5 +1,5 @@
 /* 
- * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
+ * Copyright 2019 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,33 @@
  */
 package org.japo.java.libraries;
 
-import java.awt.Color;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JTextField;
+import java.util.regex.PatternSyntaxException;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
-public class UtilesValidacion {
+public final class UtilesValidacion {
 
     // Dato + Expresión Regular
-    public static boolean validarDato(String dato, String expReg) {
+    public static final boolean validar(String dato, String er) {
         // Semáforo de validación
         boolean testOK = false;
 
-        // Realizar Validación
+        // Proceso de validación
         try {
-            // Patrón de la expresión regular
-            Pattern patron = Pattern.compile(expReg);
+            // Compila la expresión regular
+            Pattern patron = Pattern.compile(er);
 
-            // Detector Texto de Prueba
+            // Genera el motor de búsqueda
             Matcher detector = patron.matcher(dato);
 
             // Averiguar Coincidencia
             testOK = detector.matches();
-        } catch (Exception e) {
+        } catch (PatternSyntaxException e) {
             System.out.println(e);
         }
 
@@ -49,153 +49,24 @@ public class UtilesValidacion {
         return testOK;
     }
 
-    // Campo de texto con DNI + Texto campo vacío
-    public static boolean validarCampoDNI(
-            JTextField txfActual, String textoCampoVacio) {
-        // Texto del campo - No espaciadores
-        String textoActual = txfActual.getText().trim();
+    // Texto + Expresión Regular
+    public static final Matcher buscarPatron(String texto, String er) {
+        // Compila la expresión regular
+        Pattern patron = Pattern.compile(er);
 
-        // Campo vacio
-        textoActual = textoActual.equals("") ? textoCampoVacio : textoActual;
+        // Genera el motor de búsqueda
+        Matcher detector = patron.matcher(texto);
 
-        // Valida el Dato
-        boolean validacionOK = UtilesDNI.validarDNI(textoActual);
+        // Realiza la comprobación
+        detector.find();
 
-        // Señala la validación
-        if (validacionOK) {
-            // Señalar Contenido Correcto
-            txfActual.setForeground(Color.BLACK);
-        } else {
-            // Señalar Contenido Erróneo
-            txfActual.setForeground(Color.RED);
-        }
-
-        // Resultado de la validación
-        return validacionOK;
+        // Retorno del resultado
+        return detector;
     }
 
-    // Campo de texto con FECHA + Texto campo vacío
-    public static boolean validarCampoFecha(
-            JTextField txfActual, String textoCampoVacio) {
-        // Texto del campo - No espaciadores
-        String textoActual = txfActual.getText().trim();
-
-        // Campo vacio
-        textoActual = textoActual.equals("") ? textoCampoVacio : textoActual;
-
-        // Valida el Dato
-        boolean validacionOK = UtilesFecha.validarFecha(textoActual);
-
-        // Señala la validación
-        if (validacionOK) {
-            // Señalar Contenido Correcto
-            txfActual.setForeground(Color.BLACK);
-        } else {
-            // Señalar Contenido Erróneo
-            txfActual.setForeground(Color.RED);
-        }
-
-        // Resultado de la validación
-        return validacionOK;
-    }
-
-    // Campo de texto con DATO + ExpReg + Texto campo vacío
-    public static boolean validarCampoTexto(
-            JTextField txfActual, String expReg, String textoCampoVacio) {
-        // Texto del campo - No espaciadores
-        String textoActual = txfActual.getText().trim();
-
-        // Comprueba campo vacío
-        textoActual = textoActual.equals("") ? textoCampoVacio : textoActual;
-
-        // Restaura el texto formateado
-        txfActual.setText(textoActual);
-
-        // Valida el Dato
-        boolean validacionOK = validarDato(textoActual, expReg);
-
-        // Señala la validación
-        if (validacionOK) {
-            // Señalar Contenido Correcto
-            txfActual.setForeground(Color.BLACK);
-        } else {
-            // Señalar Contenido Erróneo
-            txfActual.setForeground(Color.RED);
-        }
-
-        // Resultado de la validación
-        return validacionOK;
-    }
-
-    // Campo de texto con DATO + Lista + Texto campo vacío
-    public static boolean validarCampoTextoLista(
-            JTextField txfActual, String[] lista, String textoCampoVacio) {
-        // Texto del campo - No espaciadores
-        String textoActual = txfActual.getText().trim();
-
-        // Comprueba campo vacío
-        textoActual = textoActual.equals("") ? textoCampoVacio : textoActual;
-
-        // Restaura el texto formateado
-        txfActual.setText(textoActual);
-
-        // Valida el Dato
-        boolean validacionOK = validarDatoLista(textoActual, lista);
-
-        // Señala la validación
-        if (validacionOK) {
-            // Señalar Contenido Correcto
-            txfActual.setForeground(Color.BLACK);
-        } else {
-            // Señalar Contenido Erróneo
-            txfActual.setForeground(Color.RED);
-        }
-
-        // Resultado de la validación
-        return validacionOK;
-    }
-
-    // Validar URL
-    public static boolean validarURL(String url) {
-        // Expresión Regular
-        final String ER = "^(https?://)?(([\\w!~*'().&=+$%-]+: )?[\\w!~*'().&=+$%-]+@)?(([0-9]{1,3}\\.){3}[0-9]{1,3}|([\\w!~*'()-]+\\.)*([\\w^-][\\w-]{0,61})?[\\w]\\.[a-z]{2,6})(:[0-9]{1,4})?((/*)|(/+[\\w!~*'().;?:@&=+$,%#-]+)+/*)$";
-
-        // Devuelve Semáforo
-        return validarDato(url, ER);
-    }
-
-    // Validar email
-    public static boolean validarEMail(String email) {
-        // Expresión Regular
-        final String ER = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*";
-
-        // Devuelve Semáforo
-        return validarDato(email, ER);
-    }
-
-    // Validar Dato < Lista Datos
-    public static boolean validarDatoLista(String dato, String[] lista) {
-        // Semáforo Validación
-        boolean validacionOK = false;
-
-        // Proceso Validación
-        if (lista != null) {
-            // Referencia Expresión Regular
-            String er = "";
-
-            // Construye Expresión Regular
-            for (String item : lista) {
-                er += item + "|";
-            }
-
-            // Elimina Operador Final
-            er = er.substring(0, er.lastIndexOf("|"));
-
-            // Calcula Semáforo
-            validacionOK = validarDato(dato, er);
-        }
-
-        // Devuelve Semáforo
-        return validacionOK;
+    // Texto + [Lista]
+    public static final boolean validar(String dato, String[] lista) {
+        Arrays.sort(lista);
+        return Arrays.binarySearch(lista, dato) >= 0;
     }
 }
