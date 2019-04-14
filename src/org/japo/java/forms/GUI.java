@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
+ * Copyright 2019 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ public final class GUI extends JFrame {
     public static final String DEF_FONT_BANNER_FALLBACK_NAME = "Serif";
     public static final String DEF_FONT_INTERFACE_SYSTEM_NAME = UtilesSwing.FONT_LUCIDA_SANS_NAME;
     public static final String DEF_FONT_INTERFACE_FALLBACK_NAME = "Dialog";
+    public static final String DEF_FORM_TITLE = "Swing Manual App";
     public static final int DEF_FORM_HEIGHT = 300;
-    public static final String DEF_FORM_TITLE = "Swing Manual Title";
     public static final int DEF_FORM_WIDTH = 500;
     public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
 
